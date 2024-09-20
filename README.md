@@ -1,3 +1,8 @@
+<!-- 
+References:
+1.https://www.cherryservers.com/blog/install-kubernetes-on-ubuntu
+2.https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+ -->
 ### Kubernetes Setup Guide for Virtual Machines
 
 Welcome to the Kubernetes Setup Guide! This repository provides a streamlined, step-by-step approach for setting up a Kubernetes cluster on virtual machines. Ideal for personal use or for sharing with others, this guide simplifies the process of getting a Kubernetes environment up and running.
@@ -247,4 +252,27 @@ Run the following commands on the master node to deploy the Calico operator.
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
 ```
 
-> WIP --todo make sure steps after this needed or not. add configure docker port part.
+#### Step 8: Add worker nodes to the cluster
+On the control plane node (master node), run the following command to generate the join command:
+```bash
+ kubeadm token create --print-join-command
+```
+
+This will output a command similar to:
+```bash
+kubeadm join <control-plane-ip>:<port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+```
+
+Copy the generated join command and execute it on the worker node. For example:
+```bash
+sudo kubeadm join <control-plane-ip>:<port> --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+```
+
+After the join command has been executed successfully, verify the worker node's status by running the following command on the master node: 
+
+```bash
+kubectl get nodes
+```
+The worker node should appear in the list with a status of `Ready`.
+
+>todo add troubleshoot tips and images
